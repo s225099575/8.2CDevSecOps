@@ -33,30 +33,10 @@ pipeline {
 stage('SonarCloud Analysis') {
     steps {
         sh '''
-        set -e
+        # Add SonarScanner CLI to PATH
+        export PATH=$PATH:$(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin
 
-        apt-get update -qq
-        apt-get install -y wget unzip curl
-
-        echo "🔍 Fetching latest SonarScanner CLI version..."
-        LATEST_VERSION=$(curl -s https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/ \
-            | grep -oP 'sonar-scanner-cli-\\K[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+(?=-linux\\.zip)' \
-            | sort -V | tail -n1)
-
-        echo "✅ Latest version is: $LATEST_VERSION"
-
-        FILENAME="sonar-scanner-cli-$LATEST_VERSION-linux.zip"
-        DIRNAME="sonar-scanner-$LATEST_VERSION-linux"
-
-        if [ ! -d "$DIRNAME" ]; then
-            echo "⬇️ Downloading $FILENAME..."
-            wget --quiet "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/$FILENAME"
-            unzip -q "$FILENAME"
-            rm "$FILENAME"
-        fi
-
-        export PATH="$PATH:$(pwd)/$DIRNAME/bin"
-
+        # Run SonarScanner
         sonar-scanner \
           -Dsonar.projectKey=s225099575_8.2CDevSecOps \
           -Dsonar.organization=s225099575 \
