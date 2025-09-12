@@ -31,29 +31,21 @@ pipeline {
  }
  }
  stage('SonarCloud Analysis') {
- steps {
- sh '''
- apt-get update
-            apt-get install -y wget unzip
- # Download SonarScanner CLI if it doesn't already exist
-        if [ ! -d "sonar-scanner-5.12.0.40707-linux" ]; then
-            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.12.0.40707-linux.zip
-            unzip sonar-scanner-cli-5.12.0.40707-linux.zip
-        fi
-
-        # Add SonarScanner to PATH for this script
-        export PATH=$PATH:$(pwd)/sonar-scanner-5.12.0.40707-linux/bin
-
-        # Run SonarScanner with project properties
-        sonar-scanner \
-          -Dsonar.projectKey=s225099575_8.2CDevSecOps \
-          -Dsonar.organization=s225099575 \
-          -Dsonar.sources=. \
-          -Dsonar.exclusions=node_modules/**,test/** \
-          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-          -Dsonar.login=$SONAR_TOKEN
-'''
- }
- }
+    steps {
+        script {
+            docker.image('sonarsource/sonar-scanner-cli:latest').inside {
+                sh """
+                    sonar-scanner \
+                      -Dsonar.projectKey=s225099575_8.2CDevSecOps \
+                      -Dsonar.organization=s225099575 \
+                      -Dsonar.sources=. \
+                      -Dsonar.exclusions=node_modules/**,test/** \
+                      -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                      -Dsonar.login=$SONAR_TOKEN
+                """
+            }
+        }
+    }
+}
  }
 }
