@@ -33,16 +33,29 @@ pipeline {
 stage('SonarCloud Analysis') {
     steps {
         sh '''
-        apt-get update
-        apt-get install -y wget unzip
+        set -e
 
-        if [ ! -d "sonar-scanner-5.12.0.40707-linux" ]; then
-            wget --user-agent="Mozilla/5.0" \
-                 https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.12.0.40707-linux.zip
-            unzip sonar-scanner-cli-5.12.0.40707-linux.zip
+        apt-get update -qq
+        apt-get install -y wget unzip curl
+
+        echo "🔍 Fetching latest SonarScanner CLI version..."
+        LATEST_VERSION=$(curl -s https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/ \
+            | grep -oP 'sonar-scanner-cli-\\K[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+(?=-linux\\.zip)' \
+            | sort -V | tail -n1)
+
+        echo "✅ Latest version is: $LATEST_VERSION"
+
+        FILENAME="sonar-scanner-cli-$LATEST_VERSION-linux.zip"
+        DIRNAME="sonar-scanner-$LATEST_VERSION-linux"
+
+        if [ ! -d "$DIRNAME" ]; then
+            echo "⬇️ Downloading $FILENAME..."
+            wget --quiet "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/$FILENAME"
+            unzip -q "$FILENAME"
+            rm "$FILENAME"
         fi
 
-        export PATH=$PATH:$(pwd)/sonar-scanner-5.12.0.40707-linux/bin
+        export PATH="$PATH:$(pwd)/$DIRNAME/bin"
 
         sonar-scanner \
           -Dsonar.projectKey=s225099575_8.2CDevSecOps \
