@@ -46,8 +46,8 @@ pipeline {
 
         # Run SonarScanner with project properties
         sonar-scanner \
-          -Dsonar.projectKey=8.2CDevSecOps \
-          -Dsonar.organization=your_organization_name \
+          -Dsonar.projectKey=s225099575_8.2CDevSecOps \
+          -Dsonar.organization=s225099575 \
           -Dsonar.sources=. \
           -Dsonar.exclusions=node_modules/**,test/** \
           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
