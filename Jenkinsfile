@@ -36,6 +36,10 @@ stage('SonarCloud Analysis') {
         # Install Java (required for SonarScanner)
         apt-get update
         apt-get install -y openjdk-17-jre
+
+        # Set JAVA_HOME for this script
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        export PATH=$JAVA_HOME/bin:$PATH
         
         # Add SonarScanner CLI to PATH
         chmod +x $(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner
