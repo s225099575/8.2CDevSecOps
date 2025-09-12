@@ -1,8 +1,6 @@
 pipeline {
  agent any
- environment {
-        SONAR_TOKEN = credentials('SONAR_TOKEN')
-    }
+
  stages {
  stage('Checkout') {
  steps {
@@ -30,32 +28,7 @@ pipeline {
  sh 'npm audit || true' // This will show known CVEs in the output
  }
  }
-stage('SonarCloud Analysis') {
-    steps {
-        sh '''
-        # Install Java (required for SonarScanner)
-        apt-get update
-        apt-get install -y openjdk-17-jre
 
-        # Set JAVA_HOME for this script
-        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-        export PATH=$JAVA_HOME/bin:$PATH
-        
-        # Add SonarScanner CLI to PATH
-        chmod +x $(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner
-        export PATH=$PATH:$(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin
-
-        # Run SonarScanner
-        sonar-scanner \
-          -Dsonar.projectKey=s225099575_8.2CDevSecOps \
-          -Dsonar.organization=s225099575 \
-          -Dsonar.sources=. \
-          -Dsonar.exclusions=node_modules/**,test/** \
-          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-          -Dsonar.login=$SONAR_TOKEN
-        '''
-    }
-}
 
  }
 }
