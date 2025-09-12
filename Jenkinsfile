@@ -33,6 +33,10 @@ pipeline {
 stage('SonarCloud Analysis') {
     steps {
         sh '''
+        # Install Java (required for SonarScanner)
+        apt-get update
+        apt-get install -y openjdk-17-jre
+        
         # Add SonarScanner CLI to PATH
         chmod +x $(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner
         export PATH=$PATH:$(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin
