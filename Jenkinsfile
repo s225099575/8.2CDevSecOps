@@ -34,6 +34,7 @@ stage('SonarCloud Analysis') {
     steps {
         sh '''
         # Add SonarScanner CLI to PATH
+        chmod +x $(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner
         export PATH=$PATH:$(pwd)/sonar-scanner-7.2.0.5079-linux-x64/bin
 
         # Run SonarScanner
@@ -47,5 +48,6 @@ stage('SonarCloud Analysis') {
         '''
     }
 }
+
  }
 }
