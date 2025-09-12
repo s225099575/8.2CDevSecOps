@@ -33,6 +33,8 @@ pipeline {
  stage('SonarCloud Analysis') {
  steps {
  sh '''
+ apt-get update
+            apt-get install -y wget unzip
  # Download SonarScanner CLI if it doesn't already exist
         if [ ! -d "sonar-scanner-5.12.0.40707-linux" ]; then
             wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.12.0.40707-linux.zip
