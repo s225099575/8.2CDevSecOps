@@ -13,26 +13,31 @@ pipeline {
  }
  }
  stage('Run Tests') {
- steps {
- sh 'npm test > test.log 2>&1 || true' // Allows pipeline to continue despite test failures
- }
-  post {
-   success {
-    def logs = readFile("test.log")
-    mail to: "dheisithak@gmail.com",
-     subject: "Run Tests Email",
-     body: "Tests ran successfully!\n\nLogs:\n${logs}"
-     
-   }
-   failure {
-    def logs = readFile("test.log")
-    mail to: "dheisithak@gmail.com",
-     subject: "Run Tests Email",
-     body: "Test run was a failure!\n\nLogs:\n${logs}"
-     
-   }
+  steps {
+    sh 'npm test || true' // Run tests even if they fail
+    sh 'touch test.log || true' // Ensure log file exists (avoids crash if missing)
   }
- }
+  post {
+    success {
+      mail to: "dheisithak@gmail.com",
+           subject: "Run Tests Email - SUCCESS",
+           body: """Tests ran successfully!
+
+---------------- Logs ----------------
+${readFile('test.log')}
+"""
+    }
+    failure {
+      mail to: "dheisithak@gmail.com",
+           subject: "Run Tests Email - FAILURE",
+           body: """Test run failed!
+
+---------------- Logs ----------------
+${readFile('test.log')}
+"""
+    }
+  }
+}
  stage('Generate Coverage Report') {
  steps {
  // Ensure coverage report exists
@@ -40,26 +45,28 @@ pipeline {
  }
  }
  stage('NPM Audit (Security Scan)') {
- steps {
- sh 'npm audit > audit.log 2>&1 || true' // This will show known CVEs in the output
- }
-  post {
-   success {
-    def logs = readFile("audit.log")
-    mail to: "dheisithak@gmail.com",
-     subject: "Security Scan Email",
-     body: "Security Scan was successful!\n\nLogs:\n${logs}"
-     
-   }
-   failure {
-    def logs = readFile("audit.log")
-    mail to: "dheisithak@gmail.com",
-     subject: "Security Scan Email",
-     body: "Security Scan was a failure!\n\nLogs:\n${logs}"
-     
-   }
+  steps {
+    sh 'npm audit || true' // Run audit even if it fails
+    sh 'touch audit.log || true' // Ensure log file exists
   }
- }
-  
- }
+  post {
+    success {
+      mail to: "dheisithak@gmail.com",
+           subject: "Security Scan Email - SUCCESS",
+           body: """Security scan completed successfully!
+
+---------------- Logs ----------------
+${readFile('audit.log')}
+"""
+    }
+    failure {
+      mail to: "dheisithak@gmail.com",
+           subject: "Security Scan Email - FAILURE",
+           body: """Security scan failed!
+
+---------------- Logs ----------------
+${readFile('audit.log')}
+"""
+    }
+  }
 }
