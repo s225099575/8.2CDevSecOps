@@ -16,6 +16,20 @@ pipeline {
  steps {
  sh 'npm test || true' // Allows pipeline to continue despite test failures
  }
+  post {
+   success {
+    mail to: "dheisithak@gmail.com",
+     subject: "Run Tests Email",
+     body: "Tests ran successfully!",
+     compressLog: true
+   }
+   failure {
+    mail to: "dheisithak@gmail.com",
+     subject: "Run Tests Email",
+     body: "Test run was a failure!",
+     compressLog: true
+   }
+  }
  }
  stage('Generate Coverage Report') {
  steps {
@@ -27,8 +41,21 @@ pipeline {
  steps {
  sh 'npm audit || true' // This will show known CVEs in the output
  }
+  post {
+   success {
+    mail to: "dheisithak@gmail.com",
+     subject: "Security Scan Email",
+     body: "Security Scan was successful!",
+     compressLog: true
+   }
+   failure {
+    mail to: "dheisithak@gmail.com",
+     subject: "Security Scan Email",
+     body: "Security Scan was a failure!",
+     compressLog: true
+   }
+  }
  }
-
-
+  
  }
 }
