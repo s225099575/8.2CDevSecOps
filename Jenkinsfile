@@ -14,8 +14,7 @@ pipeline {
  }
  stage('Run Tests') {
   steps {
-    sh 'npm test || true' // Run tests even if they fail
-    sh 'touch test.log || true' // Ensure log file exists (avoids crash if missing)
+    sh 'npm test > test.log 2>&1 || true' // Run tests even if they fail
   }
   post {
     success {
@@ -46,8 +45,7 @@ ${readFile('test.log')}
  }
  stage('NPM Audit (Security Scan)') {
   steps {
-    sh 'npm audit || true' // Run audit even if it fails
-    sh 'touch audit.log || true' // Ensure log file exists
+    sh 'npm audit > audit.log 2>&1 || true' // Run audit even if it fails
   }
   post {
     success {
